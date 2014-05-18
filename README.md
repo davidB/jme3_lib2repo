@@ -19,12 +19,12 @@ Then artifact (jar) is available :
  group : com.jme3
  version: 3.0+2014-04-15
 ```
-Change `jmeRev` in jme3/build.gradle to use as other download than 2014-04-15 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
+Change `jmeRev` in jme3/build.gradle to use an other download than 2014-04-15 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
 
 # Limitations
 
-* I didn't port every thinks
-* *-sources.jar and *-javadoc.jar are not installed
-* not tested a lot
+* I didn't port every libs.
+* *-sources.jar and *-javadoc.jar are not installed.
+* not battle tested
 
 Pull Request welcome.
