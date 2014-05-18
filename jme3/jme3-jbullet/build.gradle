@@ -1,0 +1,11 @@
+if (!hasProperty('mainClass')) {
+    ext.mainClass = ''
+}
+
+dependencies {
+    compile ('java3d:vecmath:1.3.1')
+    compile project(':jbullet')
+    compile project(':stack-alloc')
+    compile project(':jme3-core')
+    compile project(':jme3-terrain')
+}

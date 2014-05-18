@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'de.undercouch:gradle-download-task:1.0'
+    }
+}
+
+apply plugin: 'download-task'
+
+def jmeRev = "2014-04-25"
+//def jmeLibsDirLocal = "${userHome}/.jmonkeyplatform/3.0/libs"
+def jmeDir = "${buildDir}/jme"
+def jmeLibsDir = "$jmeDir/lib"
+def jmeZipFile = file("${buildDir}/jme/jME3_${jmeRev}.zip")
+def jmeZipUrl = "http://updates.jmonkeyengine.org/stable/3.0/engine/jME3_${jmeRev}.zip"
+
+
+task downloadJme << {
+  jmeZipFile.parentFile.mkdirs()
+  if (!jmeZipFile.exists) {
+    download {
+      src jmeZipUrl
+      dest destFile
+    }
+  }
+}
+
+task unzipJme(type: Copy) {
+  from zipTree(jmeZipFile)
+  into jmeDir
+}
+
+task install << {
+  subprojects {  install }
+}
+
+subprojects {
+  apply plugin: 'java' //required to run maven
+  apply plugin: 'maven'
+
+  repositories {
+    mavenCentral()
+  }
+
+  group = "com.jme3"
+  version = "3.0+${jmeRev}"
+
+  jar.doLast {
+    def jmeLibName = project.name.replace('jme3', 'jME3')
+    def srcFile = file("${jmeLibsDir}/${jmeLibName}.jar")
+    def destFile = file("${libsDir}/${project.name}-${project.version}.jar")
+    destFile.parentFile.mkdirs()
+    //print "copy from $srcFile to ${destFile}"
+    copy {
+      from srcFile
+      into libsDir
+      rename { String fileName ->
+        //fileName.replace("input", "output")
+        "${project.name}-${project.version}.jar"
+      }
+    }
+  }
+
+}
