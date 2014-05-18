@@ -17,9 +17,9 @@ cd jme3
 Then artifact (jar) is available :
 ```
  group : com.jme3
- version: 3.0+2014-04-15
+ version: 3.0+2014-04-25
 ```
-Change `jmeRev` in jme3/build.gradle to use an other download than 2014-04-15 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
+Change `jmeRev` in jme3/build.gradle to use an other download than 2014-04-25 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
 
 # Limitations
 
