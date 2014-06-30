@@ -12,6 +12,7 @@
 
 // To declare projects as part of a multi-project build use the 'include' method
 include 'lemur'
+include 'zay-es'
 //include 'jme3'
 //include 'jme3:jbullet', 'jme3:stack-alloc'
 //include 'jme3:jme3-blender', 'jme3:jme3-core', 'jme3:jme3-desktop', 'jme3:jme3-effects', 'jme3:jme3-jbullet', 'jme3:jme3-lwjgl', 'jme3:jme3-networking', 'jme3:jme3-niftygui', 'jme3:jme3-plugins', 'jme3:jme3-terrain', 'jme3:jme3-testdata'
