@@ -9,7 +9,7 @@ buildscript {
 
 apply plugin: 'download-task'
 
-def jmeRev = "2014-04-25"
+def jmeRev = "2014-06-12"
 //def jmeLibsDirLocal = "${userHome}/.jmonkeyplatform/3.0/libs"
 def jmeDir = "${buildDir}/jme"
 def jmeLibsDir = "$jmeDir/lib"
@@ -19,10 +19,10 @@ def jmeZipUrl = "http://updates.jmonkeyengine.org/stable/3.0/engine/jME3_${jmeRe
 
 task downloadJme << {
   jmeZipFile.parentFile.mkdirs()
-  if (!jmeZipFile.exists) {
+  if (!jmeZipFile.exists()) {
     download {
       src jmeZipUrl
-      dest destFile
+      dest jmeZipFile
     }
   }
 }
@@ -45,7 +45,7 @@ subprojects {
   }
 
   group = "com.jme3"
-  version = "3.0+${jmeRev}"
+  version = "3.0.0+${jmeRev}"
 
   jar.doLast {
     def jmeLibName = project.name.replace('jme3', 'jME3')

@@ -6,20 +6,26 @@ Contributions (PR) are  welcomes (it's my first gradle project).
 
 # Instructions
 
-to install jme3
+## to install jme3
 
 ```
 # require java available in PATH
-cd jme3
-../gradlew downloadJme unzipJme install
+cd jme3 && ../gradlew downloadJme unzipJme install && cd ..
 ```
 
 Then artifact (jar) is available :
 ```
  group : com.jme3
- version: 3.0+2014-04-25
+ version: 3.0.0+2014-06-12
 ```
-Change `jmeRev` in jme3/build.gradle to use an other download than 2014-04-25 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
+Change `jmeRev` in jme3/build.gradle to use an other download than 2014-06-12 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
+
+## to install lemur, zay-es
+
+```
+cd zay-es && ../gradlew install && cd ..
+cd lemur && ../gradlew install && cd ..
+```
 
 # Limitations
 
