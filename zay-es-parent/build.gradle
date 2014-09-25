@@ -1,0 +1,147 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'de.undercouch:gradle-download-task:1.0'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+  }
+}
+import de.undercouch.gradle.tasks.download.Download
+
+def rev = 'r1208'
+
+subprojects {
+  group = 'com.simsilica'
+  version = "0.0.1-rev1208"
+
+  repositories {
+    mavenCentral()
+    maven {
+      url "http://updates.jmonkeyengine.org/maven/"
+    }
+  }
+}
+
+project(':zay-es') {
+  apply plugin: 'download-task'
+  apply plugin: 'java'
+
+  dependencies {
+    compile 'com.jme3:jme3-core:3.0.10'
+    compile 'com.google.guava:guava:12.0'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    testRuntime 'log4j:log4j:1.2.12'
+    testRuntime 'org.slf4j:slf4j-log4j12:1.7.5'
+  }
+
+  jar.doLast {
+    download {
+      src "https://jmonkeyplatform-contributions.googlecode.com/svn-history/${rev}/trunk/zay-es/release/Zay-ES.jar"
+      dest file("${libsDir}/${project.name}-${version}.jar")
+    }
+  }
+
+  task javadocJarFile(type: Download) {
+    src "https://jmonkeyplatform-contributions.googlecode.com/svn-history/${rev}/trunk/zay-es/release/Zay-ES-javadoc.jar"
+    dest file("${libsDir}/${project.name}-${version}-javadoc.jar")
+    overwrite false
+    onlyIfNewer true
+  }
+}
+
+project(':zay-es-net') {
+  apply plugin: 'download-task'
+  apply plugin: 'java'
+
+  dependencies {
+    compile 'com.jme3:jme3-core:3.0.10'
+    compile 'com.google.guava:guava:12.0'
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile project(':zay-es')
+    testRuntime 'log4j:log4j:1.2.12'
+    testRuntime 'org.slf4j:slf4j-log4j12:1.7.5'
+  }
+
+  jar.doLast {
+    download {
+      src "https://jmonkeyplatform-contributions.googlecode.com/svn-history/${rev}/trunk/zay-es/release/Zay-ES-Net.jar"
+      dest file("${libsDir}/${project.name}-${version}.jar")
+    }
+  }
+
+  task javadocJarFile(type: Download) {
+    src "https://jmonkeyplatform-contributions.googlecode.com/svn-history/${rev}/trunk/zay-es/release/Zay-ES-Net-javadoc.jar"
+    dest file("${libsDir}/${project.name}-${version}-javadoc.jar")
+    overwrite false
+    onlyIfNewer true
+  }
+}
+
+def pomConfig = {
+  url 'http://hub.jmonkeyengine.org/forum/topic/zay-es-links/'
+  inceptionYear '2014'
+
+  scm {
+    url 'https://code.google.com/p/jmonkeyplatform-contributions/source/browse/trunk/zay-es'
+  }
+
+  licenses {
+    license {
+      name 'New BSD (3-clause) License'
+      url 'http://opensource.org/licenses/BSD-3-Clause'
+      distribution 'repo'
+    }
+  }
+
+  developers {
+    developer {
+      name 'Paul Speed'
+      id 'pspeed'
+    }
+  }
+}
+
+subprojects {
+  apply plugin: 'maven-publish'
+  apply plugin: 'com.jfrog.bintray'
+
+  assemble.dependsOn(jar, javadocJarFile)
+
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.java
+        artifact (javadocJarFile.dest, {
+          file javadocJarFile.dest
+          classifier 'javadoc'
+          extension 'jar'
+        } )
+        pom.withXml {
+          asNode().children().last() + pomConfig
+        }
+      }
+    }
+  }
+
+  bintray {
+    user = bintray_user
+    key = bintray_api_key
+
+    publications = ['maven'] //When uploading Maven-based publication files
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+      repo = 'jme3stuff'
+      name = project.name
+      desc = "Zay-ES (pronounced 'zay us' like Dr. Zaius) is a light weight flexible Entity Component System.  Entity Component Systems use a data-oriented design approach that employs composition to build complex applications of systems.  Systems are application code the operates on only a subset of the data components of an entity. Zay-ES is a data management library that facilitates these designs.  It supports real-time in-memory entity components as well as persistent components, even at the same time. module ${project.name}"
+      websiteUrl = "http://hub.jmonkeyengine.org/forum/topic/zay-es-links/"
+      issueTrackerUrl = "http://hub.jmonkeyengine.org/forum/board/projects/zay-es/"
+      vcsUrl = "https://code.google.com/p/jmonkeyplatform-contributions/source/browse/trunk/zay-es"
+      licenses = ['BSD 3-Clause']
+      labels = ['jmonkeyengine']
+      publicDownloadNumbers = true
+    }
+  }
+}
