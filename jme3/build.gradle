@@ -12,6 +12,8 @@ buildscript {
 apply plugin: 'download-task'
 
 def jmeRev = "2014-06-12"
+// version could be extracted from build/jme/source/com/jme3/system/JmeVersion.java
+version = 3.0.10
 //def jmeLibsDirLocal = "${userHome}/.jmonkeyplatform/3.0/libs"
 def jmeDir = "${buildDir}/jme"
 def jmeLibsDir = "$jmeDir/lib"
@@ -48,8 +50,8 @@ subprojects {
     mavenCentral()
   }
 
-  group = "net.alchim31.com.jme3"
-  version = "3.0.0+${jmeRev}"
+  group = "com.jme3"
+  //version = "3.0.0+${jmeRev}"
 
   jar.doLast {
     def jmeLibName = project.name.replace('jme3', 'jME3')
@@ -66,7 +68,7 @@ subprojects {
       }
     }
   }
-modifyPom {
+  modifyPom {
     project {
         name 'jMonkeyEngine'
         description 'A complete 3D game development suite written purely in Java.'
@@ -86,14 +88,45 @@ modifyPom {
                 distribution 'repo'
             }
         }
-
-//        developers {
-//            developer {
-//                id ''
-//                name ''
-//                email ''
-//            }
-//        }
+        // from http://hub.jmonkeyengine.org/introduction/team/
+        developers {
+            developer {
+                name'Kirill Vainer'
+                id 'Momoko_Fan'
+            }
+            developer {
+                name 'Erlend Sogge Heggen'
+                id 'erlend_sh'
+            }
+            developer {
+                name 'Skye Book'
+                id 'sbook'
+            }
+            developer {
+                name 'Normen Hansen'
+                id 'normen'
+            }
+            developer {
+                name 'Ruth Kusterer'
+                id 'zathras'
+            }
+            developer {
+                name 'Rémy Bouquet'
+                id 'nehon'
+            }
+            developer {
+                name 'Paul Speed'
+                id 'pspeed'
+            }
+            developer {
+                name 'Brent Owens'
+                id 'Sploreg'
+            }
+            developer {
+                name 'Eric Potter'
+                id 'iwgeric'
+            }
+        }
     }
 }
 
