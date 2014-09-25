@@ -10,15 +10,15 @@ Contributions (PR) are  welcomes (it's my first gradle project).
 
 ```
 # require java available in PATH
-cd jme3 && ../gradlew downloadJme unzipJme install && cd ..
+cd jme3 && ../gradlew downloadJme unzipJme publishToMavenLocal && cd ..
 ```
 
 Then artifact (jar) is available :
 ```
  group : com.jme3
- version: 3.0.0+2014-06-12
+ version: 3.0.10
 ```
-Change `jmeRev` in jme3/build.gradle to use an other download than 2014-06-12 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
+Change `jmeRev` (and `jmeVersion`) in jme3/build.gradle to use an other download than 2014-06-12 from http://updates.jmonkeyengine.org/stable/3.0/engine/ .
 
 ## to install lemur, zay-es
 

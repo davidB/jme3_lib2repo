@@ -5,7 +5,6 @@ buildscript {
     }
     dependencies {
         classpath 'de.undercouch:gradle-download-task:1.0'
-        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
     }
 }
 
@@ -13,7 +12,7 @@ apply plugin: 'download-task'
 
 def jmeRev = "2014-06-12"
 // version could be extracted from build/jme/source/com/jme3/system/JmeVersion.java
-version = 3.0.10
+def jmeVersion = "3.0.10"
 //def jmeLibsDirLocal = "${userHome}/.jmonkeyplatform/3.0/libs"
 def jmeDir = "${buildDir}/jme"
 def jmeLibsDir = "$jmeDir/lib"
@@ -36,22 +35,77 @@ task unzipJme(type: Copy) {
   into jmeDir
 }
 
-task install << {
-  subprojects {  install }
+def pomConfig = {
+  //name 'jMonkeyEngine'
+  //description 'A complete 3D game development suite written purely in Java.'
+  url 'http://jmonkeyengine.org'
+  inceptionYear '2014'
+
+  scm {
+    url 'https://github.com/jMonkeyEngine/jmonkeyengine'
+    connection 'scm:https://github.com/jMonkeyEngine/jmonkeyengine.git'
+    developerConnection 'scm:git@github.com:jMonkeyEngine/jmonkeyengine.git'
+  }
+
+  licenses {
+    license {
+      name 'New BSD (3-clause) License'
+      url 'http://hub.jmonkeyengine.org/wiki/doku.php/bsd_license'
+      distribution 'repo'
+    }
+  }
+
+  // from http://hub.jmonkeyengine.org/introduction/team/
+  developers {
+    developer {
+      name 'Kirill Vainer'
+      id 'Momoko_Fan'
+    }
+    developer {
+      name 'Erlend Sogge Heggen'
+      id 'erlend_sh'
+    }
+    developer {
+      name 'Skye Book'
+      id 'sbook'
+    }
+    developer {
+      name 'Normen Hansen'
+      id 'normen'
+    }
+    developer {
+      name 'Ruth Kusterer'
+      id 'zathras'
+    }
+    developer {
+      name 'Rémy Bouquet'
+      id 'nehon'
+    }
+    developer {
+      name 'Paul Speed'
+      id 'pspeed'
+    }
+    developer {
+      name 'Brent Owens'
+      id 'Sploreg'
+    }
+    developer {
+      name 'Eric Potter'
+      id 'iwgeric'
+    }
+  }
 }
 
 subprojects {
   apply plugin: 'java' //required to run maven
-  //apply plugin: 'maven'
-  apply plugin: 'nexus'
-
+  apply plugin: "maven-publish"
 
   repositories {
     mavenCentral()
   }
 
   group = "com.jme3"
-  //version = "3.0.0+${jmeRev}"
+  version = jmeVersion
 
   jar.doLast {
     def jmeLibName = project.name.replace('jme3', 'jME3')
@@ -68,75 +122,44 @@ subprojects {
       }
     }
   }
-  modifyPom {
-    project {
-        name 'jMonkeyEngine'
-        description 'A complete 3D game development suite written purely in Java.'
-        url 'http://jmonkeyengine.org'
-        inceptionYear '2014'
+}
 
-        scm {
-            url 'https://github.com/jMonkeyEngine/jmonkeyengine'
-            connection 'scm:https://github.com/jMonkeyEngine/jmonkeyengine.git'
-            developerConnection 'scm:git@github.com:jMonkeyEngine/jmonkeyengine.git'
-        }
+configure(subprojects.findAll {it.name == 'jme3-core'}) {
+  task javadocJar(type: Jar) {
+	  from "${jmeDir}/javadoc"
+	  classifier = 'javadoc'
+    exclude "Common", "jme3test"
+  }
 
-        licenses {
-            license {
-                name 'New BSD (3-clause) License'
-                url 'http://hub.jmonkeyengine.org/wiki/doku.php/bsd_license'
-                distribution 'repo'
-            }
+  task sourcesJar(type: Jar) {
+	  from "${jmeDir}/source"
+	  classifier = 'sources'
+    exclude "Common", "jme3test"
+  }
+
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.java
+        artifact sourcesJar
+        artifact javadocJar
+        pom.withXml {
+          asNode().children().last() + pomConfig
         }
-        // from http://hub.jmonkeyengine.org/introduction/team/
-        developers {
-            developer {
-                name'Kirill Vainer'
-                id 'Momoko_Fan'
-            }
-            developer {
-                name 'Erlend Sogge Heggen'
-                id 'erlend_sh'
-            }
-            developer {
-                name 'Skye Book'
-                id 'sbook'
-            }
-            developer {
-                name 'Normen Hansen'
-                id 'normen'
-            }
-            developer {
-                name 'Ruth Kusterer'
-                id 'zathras'
-            }
-            developer {
-                name 'Rémy Bouquet'
-                id 'nehon'
-            }
-            developer {
-                name 'Paul Speed'
-                id 'pspeed'
-            }
-            developer {
-                name 'Brent Owens'
-                id 'Sploreg'
-            }
-            developer {
-                name 'Eric Potter'
-                id 'iwgeric'
-            }
-        }
+      }
     }
+  }
 }
 
-nexus {
-    attachSources = false
-    attachTests = false
-    attachJavadoc = false
-    sign = true
+configure(subprojects.findAll {it.name != 'jme3-core'}) {
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.java
+        pom.withXml {
+          asNode().children().last() + pomConfig
+        }
+      }
+    }
+  }
 }
-
-
-}
-
