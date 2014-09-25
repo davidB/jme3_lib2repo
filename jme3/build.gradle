@@ -1,9 +1,11 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'de.undercouch:gradle-download-task:1.0'
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
     }
 }
 
@@ -38,13 +40,15 @@ task install << {
 
 subprojects {
   apply plugin: 'java' //required to run maven
-  apply plugin: 'maven'
+  //apply plugin: 'maven'
+  apply plugin: 'nexus'
+
 
   repositories {
     mavenCentral()
   }
 
-  group = "com.jme3"
+  group = "net.alchim31.com.jme3"
   version = "3.0.0+${jmeRev}"
 
   jar.doLast {
@@ -62,5 +66,44 @@ subprojects {
       }
     }
   }
+modifyPom {
+    project {
+        name 'jMonkeyEngine'
+        description 'A complete 3D game development suite written purely in Java.'
+        url 'http://jmonkeyengine.org'
+        inceptionYear '2014'
+
+        scm {
+            url 'https://github.com/jMonkeyEngine/jmonkeyengine'
+            connection 'scm:https://github.com/jMonkeyEngine/jmonkeyengine.git'
+            developerConnection 'scm:git@github.com:jMonkeyEngine/jmonkeyengine.git'
+        }
+
+        licenses {
+            license {
+                name 'New BSD (3-clause) License'
+                url 'http://hub.jmonkeyengine.org/wiki/doku.php/bsd_license'
+                distribution 'repo'
+            }
+        }
+
+//        developers {
+//            developer {
+//                id ''
+//                name ''
+//                email ''
+//            }
+//        }
+    }
+}
+
+nexus {
+    attachSources = false
+    attachTests = false
+    attachJavadoc = false
+    sign = true
+}
+
 
 }
+

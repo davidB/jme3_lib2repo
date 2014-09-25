@@ -1,2 +1,3 @@
 include 'jbullet', 'stack-alloc'
-include 'jme3-blender', 'jme3-core', 'jme3-desktop', 'jme3-effects', 'jme3-jbullet', 'jme3-lwjgl', 'jme3-lwjgl-natives','jme3-networking', 'jme3-niftygui', 'jme3-plugins', 'jme3-terrain', 'jme3-testdata'
+include 'jme3-blender', 'jme3-core', 'jme3-desktop', 'jme3-effects', 'jme3-jbullet', 'jme3-lwjgl', 'jme3-lwjgl-natives','jme3-networking', 'jme3-niftygui', 'jme3-plugins', 'jme3-terrain'
+//include 'jme3-testdata'
