@@ -1,28 +1,32 @@
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'de.undercouch:gradle-download-task:1.0'
-    }
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+  dependencies {
+    classpath 'de.undercouch:gradle-download-task:1.0'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
+  }
 }
+import de.undercouch.gradle.tasks.download.Download
 
 apply plugin: 'download-task'
-apply plugin: 'java' //required to run maven
-apply plugin: 'maven'
+apply plugin: 'java'
 
-def rev = 'r1430'
+def rev = 'r1466'
 
 group = 'com.simsilica'
-version = "0.0.0+$rev"
+version = "0.0.1-rev1466"
 
 repositories {
-  mavenLocal()
   mavenCentral()
+  maven {
+    url "http://updates.jmonkeyengine.org/maven/"
+  }
 }
 
 dependencies {
-  compile 'com.jme3:jme3-core:3.0.0+2014-06-12'
+  compile 'com.jme3:jme3-core:3.0.10'
   compile 'com.google.guava:guava:12.0'
   compile 'org.slf4j:slf4j-api:1.7.5'
   testRuntime 'log4j:log4j:1.2.12'
@@ -30,10 +34,82 @@ dependencies {
 }
 
 jar.doLast {
-  def destFile = file("${libsDir}/${project.name}-${version}.jar")
-  destFile.parentFile.mkdirs()
+  def destFile =
   download {
     src "https://jmonkeyplatform-contributions.googlecode.com/svn-history/${rev}/trunk/Lemur/release/Lemur.jar"
-    dest destFile
+    dest file("${libsDir}/${project.name}-${version}.jar")
   }
 }
+
+task javadocJarFile(type: Download) {
+  src "https://jmonkeyplatform-contributions.googlecode.com/svn-history/${rev}/trunk/Lemur/release/Lemur-javadoc.jar"
+  dest file("${libsDir}/${project.name}-${version}-javadoc.jar")
+  overwrite false
+  onlyIfNewer true
+}
+
+def pomConfig = {
+  url 'http://hub.jmonkeyengine.org/forum/topic/lemur-repo-link/'
+  inceptionYear '2014'
+
+  scm {
+    url 'https://code.google.com/p/jmonkeyplatform-contributions/source/browse/trunk/Lemur'
+  }
+
+  licenses {
+    license {
+      name 'New BSD (3-clause) License'
+      url 'http://opensource.org/licenses/BSD-3-Clause'
+      distribution 'repo'
+    }
+  }
+
+  developers {
+    developer {
+      name 'Paul Speed'
+      id 'pspeed'
+    }
+  }
+}
+
+
+  apply plugin: 'maven-publish'
+  apply plugin: 'com.jfrog.bintray'
+
+  assemble.dependsOn(jar, javadocJarFile)
+
+  publishing {
+    publications {
+      maven(MavenPublication) {
+        from components.java
+        artifact (javadocJarFile.dest, {
+          file javadocJarFile.dest
+          classifier 'javadoc'
+          extension 'jar'
+        } )
+        pom.withXml {
+          asNode().children().last() + pomConfig
+        }
+      }
+    }
+  }
+
+  bintray {
+    user = bintray_user
+    key = bintray_api_key
+
+    publications = ['maven'] //When uploading Maven-based publication files
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+      repo = 'jme3stuff'
+      name = project.name
+      desc = "Lemur is a light-weight GUI library built directly on JME components. It is scene graph-friendly and can be used to create traditional 2D GUIs in the guiNode or 3D GUIs. It can even create UIs incorporated directly into a 3D scene."
+      websiteUrl = "http://hub.jmonkeyengine.org/forum/topic/lemur-repo-link/"
+      issueTrackerUrl = "http://hub.jmonkeyengine.org/forum/board/projects/lemur/"
+      vcsUrl = "https://code.google.com/p/jmonkeyplatform-contributions/source/browse/trunk/Lemur"
+      licenses = ['BSD 3-Clause']
+      labels = ['jmonkeyengine']
+      publicDownloadNumbers = true
+    }
+  }
