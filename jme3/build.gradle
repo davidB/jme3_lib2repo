@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'de.undercouch:gradle-download-task:1.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
     }
 }
 
@@ -159,6 +160,38 @@ configure(subprojects.findAll {it.name != 'jme3-core'}) {
         pom.withXml {
           asNode().children().last() + pomConfig
         }
+      }
+    }
+  }
+}
+
+subprojects {
+  apply plugin: 'com.jfrog.bintray'
+  bintray {
+    user = bintray_user
+    key = bintray_api_key
+
+    publications = ['maven'] //When uploading Maven-based publication files
+    dryRun = false //Whether to run this as dry-run, without deploying
+    publish = true //If version should be auto published after an upload
+    pkg {
+      repo = 'jme3stuff'
+      name = project.name
+      desc = "A complete 3D game development suite written purely in Java : module ${project.name}."
+      websiteUrl = "http://jmonkeyengine.org"
+      issueTrackerUrl = "https://github.com/jMonkeyEngine/jmonkeyengine/issues"
+      vcsUrl = "https://github.com/jMonkeyEngine/jmonkeyengine.git"
+      licenses = ['BSD 3-Clause']
+      labels = ['jmonkeyengine']
+      publicDownloadNumbers = true
+      version {
+        //name = project.version
+        //vcsTag = project.version
+        //attributes = [] //Optional version-level attributes
+        //gpg {
+        //	sign = true //Determines whether to GPG sign the files. The default is false
+        //	passphrase = 'optional, the passphrase for GPG signing'
+        //}
       }
     }
   }
